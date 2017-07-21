@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="loadAccountData"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="LOAD"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="clearAccountData"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="CLEAR"/>
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:onClick="removeProfessionKey"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:text="REMOVE"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:text="Person Name"
+        android:textColor="#969494"
+        android:textSize="25sp"
+        android:textStyle="bold"/>
+    <TextView
+        android:id="@+id/txvProfession"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Profession"
+        android:textColor="#969494"
+        android:textSize="20sp"
+        android:textStyle="bold"/>
+
+</LinearLayout>
