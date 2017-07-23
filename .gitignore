@@ -10,3 +10,7 @@
  Android Studio
 *.iml
 .idea
+
+*.apk
+security/
+google-services.json
