@@ -1,7 +1,6 @@
 package com.sleep_zoner.sleepzoner;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -26,14 +24,14 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-public class MainActivity extends AppCompatActivity
+public class LoginActivity extends AppCompatActivity
         implements
         GoogleApiClient.OnConnectionFailedListener,
         View.OnClickListener
 {
 
     private GoogleApiClient mGoogleApiClient;
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "LoginActivity";
     private static final int RC_SIGN_IN = 9001;
     private SignInButton signIn;
     private FirebaseAuth mAuth;
@@ -140,7 +138,7 @@ public class MainActivity extends AppCompatActivity
                         } else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
-                            Toast.makeText(MainActivity.this, "Authentication failed.",
+                            Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
                             showSummary();
                         }
@@ -154,14 +152,14 @@ public class MainActivity extends AppCompatActivity
         String password = "change_this";
 
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
 
                         if (!task.isSuccessful()) {
                             String msg = "failed to sign up user.";
-                            Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
                             customSummery("\nfailed to create user with firebase");
                             customSummery("\n\n details: " + task.getException().toString());
                         }
@@ -185,7 +183,7 @@ public class MainActivity extends AppCompatActivity
                         if (!task.isSuccessful()) {
                             String msg = "failed to sign in user.";
                             Log.w(TAG, "signInWithEmail:failed", task.getException());
-                            Toast.makeText(MainActivity.this, msg,
+                            Toast.makeText(LoginActivity.this, msg,
                                     Toast.LENGTH_SHORT).show();
                         }
                     }
