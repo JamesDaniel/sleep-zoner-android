@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -36,25 +37,14 @@ public class LoginActivity extends AppCompatActivity
     private SignInButton signIn;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
-    private Button signUp;
-    private TextView summaryText;
-    private Button showSummaryBtn;
-    private Button clearSummaryBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         signIn = (SignInButton) findViewById(R.id.sign_in_button);
         signIn.setOnClickListener(this);
-        signUp = (Button) findViewById(R.id.sign_up_button);
-        signUp.setOnClickListener(this);
-        summaryText = (TextView) findViewById(R.id.summary_text);
-        showSummaryBtn = (Button) findViewById(R.id.showSummaryBtn);
-        showSummaryBtn.setOnClickListener(this);
-        clearSummaryBtn = (Button) findViewById(R.id.clearSummaryBtn);
-        clearSummaryBtn.setOnClickListener(this);
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -72,13 +62,11 @@ public class LoginActivity extends AppCompatActivity
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    // User is signed in
                     Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                    // todo Start new intent for sleep monitoring screen.
                 } else {
-                    // User is signed out
                     Log.d(TAG, "onAuthStateChanged:signed_out");
                 }
-                // ...
             }
         };
         mAuth.addAuthStateListener(mAuthListener);
@@ -98,29 +86,19 @@ public class LoginActivity extends AppCompatActivity
         }
     }
 
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        // Result returned from launching the Intent from GoogleSignInApi.getSignInIntent(...);
-//        if (requestCode == RC_SIGN_IN) {
-//            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-//            if (result.isSuccess()) {
-//                // Google Sign In was successful, authenticate with Firebase
-//                GoogleSignInAccount account = result.getSignInAccount();
-//                firebaseAuthWithGoogle(account);
-//                customSummery("yes ");
-//                customSummery(account.getEmail());
-//            } else {
-//                // Google Sign In failed, update UI appropriately
-//                // [START_EXCLUDE]
-//                customSummery("no");
-//                // [END_EXCLUDE]
-//            }
-//        }
-//    }
-    private void customSummery(String txt) {
-        summaryText.append(":: " + txt);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
+            if (result.isSuccess()) {
+                GoogleSignInAccount account = result.getSignInAccount();
+                firebaseAuthWithGoogle(account);
+            } else {
+                Toast.makeText(LoginActivity.this, "Failed retrieve account from Google." ,
+                        Toast.LENGTH_LONG);
+            }
+        }
     }
     private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         Log.d(TAG, "firebaseAuthWithGoogle:" + acct.getId());
@@ -131,63 +109,22 @@ public class LoginActivity extends AppCompatActivity
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            showSummary();
+                            // todo Start new intent for sleep monitoring screen.
                         } else {
-                            // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             Toast.makeText(LoginActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            showSummary();
+                            // todo Toast why login failed.
                         }
                     }
                 });
     }
 
-    private void signUp(View view) {
-        Toast.makeText(this, "Hello signUp", Toast.LENGTH_SHORT).show();
-        String email = "test@gmail.com";
-        String password = "change_this";
-
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
-
-                        if (!task.isSuccessful()) {
-                            String msg = "failed to sign up user.";
-                            Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
-                            customSummery("\nfailed to create user with firebase");
-                            customSummery("\n\n details: " + task.getException().toString());
-                        }
-                    }
-                });
-    }
-
-    private void signIn(View view) {
-        Toast.makeText(this, "Hello signIn", Toast.LENGTH_SHORT).show();
+    private void signInOfSignUp() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
-
-        String email = "test@gmail.com";
-        String password = "change_this";
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
-
-                        if (!task.isSuccessful()) {
-                            String msg = "failed to sign in user.";
-                            Log.w(TAG, "signInWithEmail:failed", task.getException());
-                            Toast.makeText(LoginActivity.this, msg,
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
     }
 
     @Override
@@ -196,38 +133,11 @@ public class LoginActivity extends AppCompatActivity
         Toast.makeText(this, "Google Play Services error.", Toast.LENGTH_SHORT).show();
     }
 
-    private void showSummary() {
-        String summary = "";
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (user != null) {
-            summary += "User is signed in. ";
-            String name = user.getEmail();
-            summary += "uname: " + name;
-        } else {
-            summary += "User is not signed in. ";
-        }
-
-        customSummery("initialized summary. " + summary);
-    }
-    private void clearSummary() {
-        summaryText.setText("");
-    }
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.sign_up_button:
-                signUp(v);
-                break;
             case R.id.sign_in_button:
-                signIn(v);
-                break;
-            case R.id.showSummaryBtn:
-                showSummary();
-                break;
-            case R.id.clearSummaryBtn:
-                clearSummary();
+                signInOfSignUp();
                 break;
         }
     }
